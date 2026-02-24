@@ -1,0 +1,44 @@
+{
+  "@@locale": "vi",
+  "app_title": "Nhắc Thuốc",
+  "nav_home": "Hôm nay",
+  "nav_medicines": "Danh sách",
+  "nav_settings": "Cài đặt",
+  "nav_about": "Thông tin Nhóm",
+  
+  "hello_user": "Chào bạn,",
+  "today_summary": "Bạn có {count} liều thuốc hôm nay",
+  "@today_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "no_meds_today": "Không có lịch uống thuốc nào.",
+  "status_taken": "Đã uống",
+  "status_skipped": "Bỏ qua",
+  "status_upcoming": "Sắp tới",
+  
+  "add_med_title": "Thêm thuốc mới",
+  "input_med_name": "Tên thuốc (VD: Paracetamol)",
+  "input_dosage": "Liều lượng (VD: 1 viên)",
+  "input_time": "Giờ uống",
+  "btn_save": "Lưu lịch nhắc",
+  "btn_cancel": "Hủy",
+  
+  "setting_language": "Ngôn ngữ / Language",
+  "lang_vn": "Tiếng Việt",
+  "lang_en": "Tiếng Anh",
+  "about_topic": "Đề tài: Phần mềm Nhắc Thuốc",
+  "about_subject": "Môn học: Lập trình TB Di động",
+  "about_instructor": "GVHD: {name}",
+  "@about_instructor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "about_team": "Nhóm phát triển"
+}

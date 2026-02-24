@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -12,7 +14,18 @@ class PillReminderApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Nhắc Thuốc',
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('vi'), // Vietnamese
+        Locale('en'), // English
+      ],
       theme: AppTheme.lightTheme,
+
       home: const MyHomePage(title: 'Trang chủ Nhắc Thuốc'),
     );
   }

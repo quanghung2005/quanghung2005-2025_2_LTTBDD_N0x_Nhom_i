@@ -1,0 +1,44 @@
+{
+  "@@locale": "en",
+  "app_title": "Pill Reminder",
+  "nav_home": "Today",
+  "nav_medicines": "Meds List",
+  "nav_settings": "Settings",
+  "nav_about": "About Us",
+  
+  "hello_user": "Hello there,",
+  "today_summary": "You have {count} meds today",
+  "@today_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "no_meds_today": "No medications scheduled for today.",
+  "status_taken": "Taken",
+  "status_skipped": "Skipped",
+  "status_upcoming": "Upcoming",
+  
+  "add_med_title": "Add New Medication",
+  "input_med_name": "Medicine Name (e.g. Paracetamol)",
+  "input_dosage": "Dosage (e.g. 1 pill)",
+  "input_time": "Time to take",
+  "btn_save": "Save Reminder",
+  "btn_cancel": "Cancel",
+  
+  "setting_language": "Ngôn ngữ / Language",
+  "lang_vn": "Tiếng Việt",
+  "lang_en": "English",
+  "about_topic": "Topic: Pill Reminder App",
+  "about_subject": "Subject: Mobile App Development",
+  "about_instructor": "Instructor: {name}",
+  "@about_instructor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "about_team": "Development Team"
+}
