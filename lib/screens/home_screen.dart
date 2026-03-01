@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_med_screen.dart';
 import 'about_screen.dart';
+import 'settings_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/medication_card.dart';
@@ -39,6 +40,16 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(l10n?.app_title ?? 'Nhắc Thuốc'),
         centerTitle: false,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: l10n?.nav_settings ?? 'Cài đặt',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: l10n?.nav_about ?? 'Thông tin',
