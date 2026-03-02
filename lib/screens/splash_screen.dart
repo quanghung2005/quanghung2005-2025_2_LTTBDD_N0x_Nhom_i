@@ -31,27 +31,35 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.health_and_safety, size: 100, color: Colors.white),
-            const SizedBox(height: 20),
-
-            Text(
-              AppLocalizations.of(context)?.app_title ?? 'Nhắc Thuốc',
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(begin: 0.0, end: 1.0),
+          duration: const Duration(milliseconds: 1000),
+          builder: (context, value, child) {
+            return Opacity(opacity: value, child: child);
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.health_and_safety,
+                size: 100,
                 color: Colors.white,
               ),
-            ),
-
-            const SizedBox(height: 48),
-
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context)?.app_title ?? 'Nhắc Thuốc',
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 48),
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );

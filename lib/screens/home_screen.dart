@@ -146,12 +146,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: _medications.length,
                       itemBuilder: (context, index) {
                         final med = _medications[index];
-                        return MedicationCard(
-                          time: med['time'] as String,
-                          medicationName: med['medicationName'] as String,
-                          dosage: med['dosage'] as String,
-                          categoryIcon: med['categoryIcon'] as IconData,
-                          status: med['status'] as String,
+                        return TweenAnimationBuilder(
+                          tween: Tween<double>(begin: 0.0, end: 1.0),
+                          duration: Duration(milliseconds: 400 + (index * 150)),
+                          curve: Curves.easeOutQuart,
+                          builder: (context, value, child) {
+                            return Transform.translate(
+                              offset: Offset(0, 30 * (1 - value)),
+                              child: Opacity(opacity: value, child: child),
+                            );
+                          },
+                          child: MedicationCard(
+                            time: med['time'] as String,
+                            medicationName: med['medicationName'] as String,
+                            dosage: med['dosage'] as String,
+                            categoryIcon: med['categoryIcon'] as IconData,
+                            status: med['status'] as String,
+                            onStatusChanged: (newStatus) {
+                              setState(() {
+                                _medications[index]['status'] = newStatus;
+                              });
+                            },
+                          ),
                         );
                       },
                     ),
