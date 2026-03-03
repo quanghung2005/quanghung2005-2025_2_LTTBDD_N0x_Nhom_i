@@ -13,6 +13,7 @@ class AddMedScreen extends StatefulWidget {
 class _AddMedScreenState extends State<AddMedScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dosageController = TextEditingController();
+  String _selectedCategory = 'vitamin';
   TimeOfDay _selectedTime = TimeOfDay.now();
 
   @override
@@ -21,6 +22,8 @@ class _AddMedScreenState extends State<AddMedScreen> {
     if (widget.initialData != null) {
       _nameController.text = widget.initialData!['medicationName'] as String;
       _dosageController.text = widget.initialData!['dosage'] as String;
+      _selectedCategory =
+          widget.initialData!['category'] as String? ?? 'vitamin';
 
       final timeStr = widget.initialData!['time'] as String;
       final parts = timeStr.split(':');
@@ -142,6 +145,55 @@ class _AddMedScreenState extends State<AddMedScreen> {
               const SizedBox(height: 24),
 
               Text(
+                'Phân loại thuốc / Category',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textColorDark,
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCategory,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                dropdownColor: Colors.white,
+                items: [
+                  DropdownMenuItem(
+                    value: 'vitamin',
+                    child: Text(l10n?.filter_vitamin ?? 'Vitamin & Canxi'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'antibiotic',
+                    child: Text(l10n?.filter_antibiotic ?? 'Kháng sinh'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'special',
+                    child: Text(l10n?.filter_special ?? 'Thuốc đặc trị'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                  }
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              Text(
                 l10n?.input_time ?? 'Giờ uống',
                 style: const TextStyle(
                   fontSize: 16,
@@ -188,11 +240,28 @@ class _AddMedScreenState extends State<AddMedScreen> {
                       _dosageController.text.isNotEmpty) {
                     final timeString =
                         '${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}';
+
+                    IconData catIcon;
+                    switch (_selectedCategory) {
+                      case 'vitamin':
+                        catIcon = Icons.healing;
+                        break;
+                      case 'antibiotic':
+                        catIcon = Icons.medication;
+                        break;
+                      case 'special':
+                        catIcon = Icons.local_hospital;
+                        break;
+                      default:
+                        catIcon = Icons.medication_outlined;
+                    }
+
                     Navigator.pop(context, {
                       'time': timeString,
                       'medicationName': _nameController.text,
                       'dosage': _dosageController.text,
-                      'categoryIcon': Icons.medication_outlined,
+                      'category': _selectedCategory,
+                      'categoryIcon': catIcon,
                       'status': 'upcoming',
                     });
                   }

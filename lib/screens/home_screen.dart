@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Timer? _timer;
+  String _selectedFilter = 'all';
 
   @override
   void initState() {
@@ -49,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _medications[i]['notified'] = true;
         });
-
         _showNotificationPopup(med, i);
       }
     }
@@ -143,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'time': '08:00',
       'medicationName': 'Paracetamol',
       'dosage': '1 viên - Sau khi ăn',
+      'category': 'special',
       'categoryIcon': Icons.medication_outlined,
       'status': 'taken',
     },
@@ -150,6 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'time': '20:00',
       'medicationName': 'Vitamin C 500mg',
       'dosage': '1 viên - Trước khi ăn',
+      'category': 'vitamin',
       'categoryIcon': Icons.healing,
       'status': 'upcoming',
     },
@@ -158,6 +160,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+
+    final filters = [
+      {'key': 'all', 'label': l10n?.filter_all ?? 'Tất cả'},
+      {'key': 'vitamin', 'label': l10n?.filter_vitamin ?? 'Vitamin & Canxi'},
+      {'key': 'antibiotic', 'label': l10n?.filter_antibiotic ?? 'Kháng sinh'},
+      {'key': 'special', 'label': l10n?.filter_special ?? 'Thuốc đặc trị'},
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -222,12 +231,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                l10n?.nav_medicines ?? 'Lịch trình hôm nay',
+                l10n?.nav_medicines ?? 'Danh sách',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -238,9 +247,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 10),
 
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: filters.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final f = filters[index];
+                  final isSelected = _selectedFilter == f['key'];
+                  return ChoiceChip(
+                    label: Text(f['label']!),
+                    selected: isSelected,
+                    onSelected: (_) {
+                      setState(() {
+                        _selectedFilter = f['key']!;
+                      });
+                    },
+                    selectedColor: AppTheme.primaryColor,
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : AppTheme.textColorDark,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    backgroundColor: Colors.grey[200],
+                    side: BorderSide.none,
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
             Expanded(
-              child: _medications.isEmpty
-                  ? Center(
+              child: Builder(
+                builder: (context) {
+                  final filteredMeds = _selectedFilter == 'all'
+                      ? _medications
+                      : _medications
+                            .where((m) => m['category'] == _selectedFilter)
+                            .toList();
+
+                  if (filteredMeds.isEmpty) {
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -260,66 +309,78 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(
-                        bottom: 80,
-                        left: 16,
-                        right: 16,
-                      ),
-                      itemCount: _medications.length,
-                      itemBuilder: (context, index) {
-                        final med = _medications[index];
-                        return TweenAnimationBuilder(
-                          tween: Tween<double>(begin: 0.0, end: 1.0),
-                          duration: Duration(milliseconds: 400 + (index * 150)),
-                          curve: Curves.easeOutQuart,
-                          builder: (context, value, child) {
-                            return Transform.translate(
-                              offset: Offset(0, 30 * (1 - value)),
-                              child: Opacity(opacity: value, child: child),
-                            );
-                          },
-                          child: MedicationCard(
-                            time: med['time'] as String,
-                            medicationName: med['medicationName'] as String,
-                            dosage: med['dosage'] as String,
-                            categoryIcon: med['categoryIcon'] as IconData,
-                            status: med['status'] as String,
-                            onStatusChanged: (newStatus) {
-                              setState(() {
-                                _medications[index]['status'] = newStatus;
-                              });
-                            },
-                            onEdit: () async {
-                              final updatedMed =
-                                  await Navigator.push<Map<String, dynamic>>(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddMedScreen(initialData: med),
-                                    ),
-                                  );
-                              if (updatedMed != null) {
-                                setState(() {
-                                  _medications[index] = updatedMed;
-                                  _medications.sort(
-                                    (a, b) => (a['time'] as String).compareTo(
-                                      b['time'] as String,
-                                    ),
-                                  );
-                                });
-                              }
-                            },
-                            onDelete: () {
-                              setState(() {
-                                _medications.removeAt(index);
-                              });
-                            },
-                          ),
-                        );
-                      },
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(
+                      bottom: 80,
+                      left: 16,
+                      right: 16,
                     ),
+                    itemCount: filteredMeds.length,
+                    itemBuilder: (context, index) {
+                      final med = filteredMeds[index];
+                      final originalIndex = _medications.indexOf(med);
+
+                      return TweenAnimationBuilder(
+                        key: ValueKey(
+                          med['medicationName'].toString() +
+                              med['time'].toString(),
+                        ),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        duration: Duration(
+                          milliseconds: 300 + (index * 100).clamp(0, 500),
+                        ),
+                        curve: Curves.easeOutQuart,
+                        builder: (context, value, child) {
+                          return Transform.translate(
+                            offset: Offset(0, 20 * (1 - value)),
+                            child: Opacity(opacity: value, child: child),
+                          );
+                        },
+                        child: MedicationCard(
+                          time: med['time'] as String,
+                          medicationName: med['medicationName'] as String,
+                          dosage: med['dosage'] as String,
+                          categoryIcon: med['categoryIcon'] as IconData,
+                          status: med['status'] as String,
+                          onStatusChanged: (newStatus) {
+                            setState(() {
+                              _medications[originalIndex]['status'] = newStatus;
+                            });
+                          },
+                          onEdit: () async {
+                            final updatedMed =
+                                await Navigator.push<Map<String, dynamic>>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddMedScreen(initialData: med),
+                                  ),
+                                );
+                            if (updatedMed != null) {
+                              setState(() {
+                                _medications[originalIndex] = updatedMed;
+                                _medications.sort(
+                                  (a, b) => (a['time'] as String).compareTo(
+                                    b['time'] as String,
+                                  ),
+                                );
+                              });
+                            }
+                          },
+                          onDelete: () {
+                            setState(() {
+                              _medications.removeAt(originalIndex);
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
